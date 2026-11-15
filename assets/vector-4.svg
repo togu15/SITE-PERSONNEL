@@ -1,0 +1,15 @@
+<svg width="1920" xmlns="http://www.w3.org/2000/svg" height="882" id="screenshot-a51250e2-acdf-8072-8008-d34707594a6a" viewBox="3524 3264 1920 882" style="-webkit-print-color-adjust::exact" xmlns:xlink="http://www.w3.org/1999/xlink" fill="none" version="1.1">
+      <g id="shape-a51250e2-acdf-8072-8008-d34707594a6a" style="display:none">
+        <defs>
+          <pattern patternUnits="userSpaceOnUse" x="3524" y="3264" width="1920" height="882" id="fill-0-render-6673">
+            <g>
+              <image id="fill-image-render-6673-1" href="https://design.penpot.app/assets/by-file-media-id/da05d154-084a-817e-8008-d36634104bcb" preserveAspectRatio="xMidYMid slice" width="1920" height="882" opacity="1"></image>
+              <rect width="1920" height="882" style="fill:#f8f6f1;fill-opacity:0.5"></rect>
+            </g>
+          </pattern>
+        </defs>
+        <g class="fills" id="fills-a51250e2-acdf-8072-8008-d34707594a6a">
+          <rect rx="0" ry="0" x="3524" y="3264" transform="matrix(1.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000)" width="1920" height="882" fill="url(#fill-0-render-6673)"></rect>
+        </g>
+      </g>
+    </svg>
