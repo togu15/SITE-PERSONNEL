@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon parcours — Thibaut Souchon</title>
+<link rel="stylesheet" href="penpot.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css">
+<style>
+:root {
+  --vr-green:#7BAF7B;
+  --vr-dark:#4F8A55;
+  --vr-paper:#F8F6F1;
+  --vr-ink:#0A0A0A;
+  --vr-stone:#4A463E;
+  --tl-pad:28px;
+}
+* {box-sizing:border-box}
+html,body {
+  margin:0;width:100%;height:100%;overflow:hidden;
+  font-family:Barlow,Arial,sans-serif;
+  color:var(--vr-ink);background:var(--vr-paper)
+}
+button {font:inherit;cursor:pointer}
+#map {position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.map-gradient {
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(248,246,241,.93),rgba(248,246,241,.53) 21%,transparent 48%)
+}
+.site-heading {position:absolute;z-index:2;top:5%;left:5%;max-width:430px;pointer-events:none}
+.kicker {font-size:12px;letter-spacing:2px;font-weight:700;text-transform:uppercase;color:var(--vr-dark)}
+.site-heading h1 {
+  margin:15px 0;font-size:clamp(32px,4.5vw,64px);
+  line-height:.97;letter-spacing:-.045em;font-weight:900;text-transform:uppercase
+}
+.site-heading h1 span {color:var(--vr-dark)}
+.site-heading p {font-size:15px;max-width:340px;line-height:1.5}
+.filters {
+  position:absolute;z-index:4;right:28px;top:25px;display:flex;
+  flex-wrap:wrap;justify-content:flex-end;gap:7px;max-width:610px
+}
+.filter {
+  background:rgba(248,246,241,.93);color:var(--vr-ink);
+  border:1px solid #D8D4C8;border-radius:30px;padding:9px 14px;font-size:12px
+}
+.filter.active {background:var(--vr-dark);color:white;border-color:var(--vr-dark)}
+.bubble {
+  width:42px;height:42px;display:flex;align-items:center;justify-content:center;
+  padding:0;border-radius:50%;border:3px solid var(--vr-paper);
+  background:var(--bubble-color);color:white;
+  box-shadow:0 2px 12px #0003,0 0 0 1px #0001;
+  transition:transform .18s,box-shadow .18s
+}
+.bubble svg {
+  width:20px;height:20px;fill:none;stroke:white;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;pointer-events:none
+}
+.bubble:hover,.bubble.selected {
+  transform:scale(1.13);
+  box-shadow:0 0 0 5px #4F8A5540,0 5px 18px #0003
+}
+.bubble:focus-visible,.timeline-tools button:focus-visible {
+  outline:2px solid #0A0A0A;outline-offset:3px
+}
+
+/* Retour rapide à la vue générale de France */
+.map-reset {
+  position:fixed;right:24px;bottom:190px;z-index:4;
+  border:1px solid #D8D4C8;border-radius:24px;
+  padding:9px 15px;background:rgba(248,246,241,.94);
+  color:#4F8A55;font-size:12px;font-weight:700;
+  box-shadow:0 2px 12px #0002;
+}
+.map-reset:hover {background:#E7EFE3}
+/* Frise : UN SEUL bloc de styles, sans règles contradictoires */
+.timeline-overlay {
+  position:fixed;z-index:5;left:2.5%;right:2.5%;bottom:15px;
+  height:156px;pointer-events:none
+}
+.timeline-backdrop {
+  position:absolute;inset:0;border-radius:22px;
+  background:rgba(248,246,241,.40);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  pointer-events:none
+}
+.timeline-viewport {
+  position:absolute;left:0;right:0;top:0;height:106px;
+  overflow:hidden;z-index:1;pointer-events:auto;cursor:grab;
+  touch-action:pan-y;user-select:none
+}
+.timeline-viewport.dragging {cursor:grabbing}
+.timeline-line {
+  position:absolute;left:var(--tl-pad);right:var(--tl-pad);
+  top:65px;height:12px;border-radius:99px;
+  background:linear-gradient(90deg,#f8f6f1 0%,#7baf7b 100%);
+  box-shadow:0 2px 7px #0002;pointer-events:none
+}
+.timeline-events {position:absolute;inset:0;pointer-events:none}
+.timeline-marker {
+  position:absolute;top:17px;transform:translateX(-50%);
+  pointer-events:auto
+}
+.timeline-years {
+  position:absolute;left:0;right:0;top:88px;height:18px;
+  pointer-events:none
+}
+.year-label {
+  position:absolute;top:0;transform:translateX(-50%);
+  color:#243C29;font-size:12px;font-weight:700;white-space:nowrap;
+  text-shadow:0 1px 8px var(--vr-paper),0 0 10px var(--vr-paper)
+}
+.timeline-tools {
+  position:absolute;top:113px;left:50%;transform:translateX(-50%);
+  z-index:3;display:flex;align-items:center;gap:23px;pointer-events:auto
+}
+.timeline-tools button {
+  width:auto;height:30px;border:0;background:none;
+  box-shadow:none;border-radius:0;padding:3px 4px;
+  font-size:22px;line-height:1;color:var(--vr-ink)
+}
+.timeline-tools button:hover {color:var(--vr-dark)}
+.timeline-tools .reset-time {
+  font-size:12px;letter-spacing:.05em;font-weight:800;
+  text-transform:uppercase;margin-left:8px
+}
+.experience-panel {
+  position:fixed;z-index:6;top:100px;right:24px;
+  width:min(370px,calc(100vw - 40px));
+  max-height:calc(100vh - 280px);overflow:auto;
+  background:rgba(248,246,241,.97);border:1px solid #D8D4C8;
+  border-radius:13px;padding:28px;box-shadow:0 15px 50px #0003;
+  transform:translateX(calc(100% + 60px));opacity:0;
+  visibility:hidden;pointer-events:none;transition:transform .35s,opacity .3s,visibility .3s
+}
+.experience-panel.open {transform:translateX(0);opacity:1;visibility:visible;pointer-events:auto}
+.close-panel {position:absolute;top:10px;right:14px;border:0;background:none;font-size:27px}
+.panel-category,.panel-date {color:var(--vr-dark);font-size:12px;font-weight:700}
+.panel-category {text-transform:uppercase;padding-right:25px}
+.experience-panel h2 {
+  font-size:clamp(23px,2.8vw,32px);line-height:1.05;font-weight:900;
+  text-transform:uppercase;margin:16px 0 12px
+}
+.experience-panel p {font-size:14px;line-height:1.6}
+.experience-panel img {width:100%;border-radius:6px;margin:16px 0}
+.experience-panel img[hidden] {display:none}
+
+@media(max-width:750px) {
+  :root {--tl-pad:23px}
+  .site-heading {top:12px;left:18px;max-width:260px}
+  .site-heading h1 {font-size:33px}
+  .site-heading p {font-size:12px;max-width:220px}
+  .filters {top:175px;left:8px;right:8px;justify-content:center}
+  .filter {font-size:11px;padding:7px 10px}
+  .timeline-overlay {left:8px;right:8px;bottom:8px;height:148px}
+  .map-reset {right:12px;bottom:168px}
+  .timeline-backdrop {border-radius:16px}
+  .timeline-tools {gap:17px}
+  .timeline-marker .bubble {width:37px;height:37px}
+  .experience-panel {
+    top:auto;bottom:0;right:0;width:100%;max-height:61vh;
+    border-radius:18px 18px 0 0;transform:translateY(110%)
+  }
+  .experience-panel.open {transform:translateY(0)}
+}
+@media(prefers-reduced-motion:reduce) {
+  .bubble,.experience-panel {transition:none}
+}
+</style>
+<link rel="stylesheet" href="parcours.css">
+<script src="header.js" defer></script>
+<link rel="stylesheet" href="header.css?v=3">
+<link rel="stylesheet" href="card.css"><script src="card.js"></script><link rel="stylesheet" href="personal.css">
+<script src="personal.js" defer></script></head>
+<body class="parcours-page"><header class="fixed-header shared-header"><nav class="shared-menu" aria-label="Navigation principale"><a href="index.html">Accueil</a><a href="parcours.html" aria-current="page">Mon parcours</a><a href="vision.html">Ma vision</a><a href="contact.html">Contact</a></nav></header>
+<div id="map" aria-label="Carte 3D de mes expériences"></div>
+<div class="map-gradient"></div>
+
+<header class="site-heading">
+  <h1>Découvrez mon parcours à travers l’<span>espace</span> ou le <span>temps</span></h1>
+</header>
+<nav class="filters" aria-label="Filtrer les expériences">
+  <button class="filter active" data-filter="tous">Tout</button>
+  <button class="filter" data-filter="professionnel">Professionnel</button>
+  <button class="filter" data-filter="formation">Formations</button>
+  <button class="filter" data-filter="personnel">Personnel</button>
+</nav>
+<aside class="experience-panel" id="experiencePanel" aria-label="Détails de l'expérience">
+  <div class="panel-toolbar"><button class="close-panel" id="closePanel" aria-label="Fermer la fiche">×</button></div>
+  <div class="panel-scroll"><div id="panelContent"></div></div>
+  <div id="panelResize" class="panel-resize" role="separator" aria-label="Élargir ou réduire la fiche" aria-orientation="vertical" tabindex="0"></div>
+</aside>
+<a class="map-linkedin" href="https://www.linkedin.com/in/thibaut-souchon-506b99141/" aria-label="LinkedIn de Thibaut Souchon (nouvel onglet)" title="Retrouvez-moi sur LinkedIn" target="_blank" rel="noopener noreferrer"><img src="assets/linkedin.svg" alt=""></a>
+<section class="timeline-overlay" aria-label="Frise chronologique">
+  <div class="timeline-backdrop"></div>
+  <div class="timeline-viewport" id="timelineViewport"
+       aria-label="Déplacer la frise, molette ou Ctrl + molette pour zoomer">
+    <div class="timeline-line"></div>
+    <div class="timeline-events" id="timelineEvents"></div>
+    <div class="timeline-years" id="timelineYears"></div>
+  </div>
+  <nav class="timeline-tools" aria-label="Navigation temporelle">
+    <button id="timeLeft" class="time-arrow time-arrow-left" aria-label="Vers le passé"><img src="assets/fleche-frise.png" alt="" aria-hidden="true" draggable="false"></button>
+    <button id="timeZoomOut" aria-label="Dézoomer">−</button>
+    <button id="timeZoomIn" aria-label="Zoomer">+</button>
+    <button id="timeRight" class="time-arrow time-arrow-right" aria-label="Vers le présent"><img src="assets/fleche-frise.png" alt="" aria-hidden="true" draggable="false"></button>
+    <button id="timeReset" class="reset-time" aria-label="Voir toute la vie">TOUT</button>
+  </nav>
+</section>
+<script id="map-style" type="application/json">{
+  "version": 8,
+  "sources": {
+    "ign-photos": {
+      "type": "raster",
+      "tiles": [
+        "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+      ],
+      "tileSize": 256,
+      "maxzoom": 19,
+      "attribution": "© IGN — <a href=\"https://cartes.gouv.fr/\">Géoplateforme</a>"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#f8f6f1"
+      }
+    },
+    {
+      "id": "ign-photos",
+      "type": "raster",
+      "source": "ign-photos",
+      "paint": {
+        "raster-opacity": 1
+      }
+    }
+  ]
+}</script>
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+<script src="parcours-data.js"></script>
+<script>
+"use strict";
+
+/* Chaque expérience est représentée à sa DATE DE DÉBUT.
+   Les données fictives restent signalées comme exemples. */
+const categories = {
+  personnel:{label:"Vie personnelle",color:"#C38F72",icon:"person",image:"assets/icone-perso.png"},
+  professionnel:{label:"Vie professionnelle",color:"#4F8A55",icon:"briefcase",image:"assets/icone-pro.png"},
+  formation:{label:"Formation",color:"#8E7DBE",icon:"graduation",image:"assets/icone-formation.png"}
+};
+
+const experiences = window.VR_EXPERIENCES || [];
+
+const icons = {
+  person:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  briefcase:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M9 7V4h6v3M3 13h18"/>',
+  graduation:'<path d="m2 9 10-5 10 5-10 5-10-5Z"/><path d="M6 11v5c4 3 8 3 12 0v-5"/>',
+  lightbulb:'<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12c1 1 2 2 2 4h4c0-2 1-3 2-4a7 7 0 0 0-4-12Z"/>'
+};
+
+function createBubble(e,extraClass="") {
+  const cat=categories[e.categorie];
+  const button=document.createElement("button");
+  button.className="bubble "+extraClass;
+  button.type="button";
+  button.title=e.titre;
+  button.dataset.id=e.id;
+  button.style.setProperty("--bubble-color",cat.color);
+  button.setAttribute("aria-label",e.titre);
+  const image=document.createElement("img");
+  image.src=cat.image;
+  image.alt="";
+  image.setAttribute("aria-hidden","true");
+  image.draggable=false;
+  button.appendChild(image);
+  button.addEventListener("click",ev=>{
+    ev.stopPropagation();
+    selectExperience(e.id);
+  });
+  return button;
+}
+
+// Inclinaison dépendante du zoom : la caméra se relève en dézoomant.
+// On anime zoom + inclinaison dans UN SEUL mouvement, pour éviter
+// la lenteur provoquée par setPitch() à chaque événement zoom.
+function pitchForZoom(zoom) {
+  if (zoom <= 4) return 0;
+  if (zoom <= 6) return (zoom - 4) * 10;
+  if (zoom <= 10) return 20 + (zoom - 6) * 10;
+  return 60;
+}
+const franceView={center:[2.5,46.55],zoom:5.35,pitch:pitchForZoom(5.35),bearing:0};
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const map=new maplibregl.Map({
+  container:"map",
+  attributionControl:false,
+  style:JSON.parse(document.getElementById("map-style").textContent),
+  ...franceView,antialias:true,maxPitch:75
+});
+
+// Keep the native credits, but outside the map stacking context, above the timeline.
+const attribution=new maplibregl.AttributionControl({compact:true});
+map.addControl(attribution,'bottom-right');
+const creditControl=document.querySelector('.maplibregl-ctrl-attrib');
+const creditLayer=document.createElement('div');
+creditLayer.className='map-credit-layer';
+document.body.append(creditLayer);
+creditLayer.append(creditControl);
+creditControl.classList.remove('maplibregl-compact-show');
+creditControl.removeAttribute('open');
+
+// Le zoom de la carte est contrôlé ici, indépendamment du zoom temporel.
+// La carte garde le déplacement à la souris et le zoom vers le pointeur.
+map.scrollZoom.disable();
+let mapWheelTarget = franceView.zoom;
+let lastMapWheel = 0;
+const mapCanvas = map.getCanvasContainer();
+mapCanvas.addEventListener("wheel", event => {
+  event.preventDefault();
+  const now = performance.now();
+  if (now - lastMapWheel > 500) mapWheelTarget = map.getZoom();
+  lastMapWheel = now;
+
+  const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 600 : 1;
+  const delta = Math.max(-120, Math.min(120, event.deltaY * unit));
+  mapWheelTarget = Math.max(map.getMinZoom(),
+    Math.min(map.getMaxZoom(), mapWheelTarget - delta / 300));
+
+  const rect = mapCanvas.getBoundingClientRect();
+  const pointer = map.unproject([
+    event.clientX - rect.left, event.clientY - rect.top
+  ]);
+  map.easeTo({
+    zoom:mapWheelTarget,
+    pitch:pitchForZoom(mapWheelTarget),
+    around:pointer,
+    duration:reduced?0:260,
+    easing:t => 1-Math.pow(1-t,3),
+    essential:true
+  });
+}, {passive:false});
+
+// Double-clic et gestes tactiles : corriger l'angle à la fin,
+// sans perturber leur animation native.
+map.on("zoomend", () => {
+  if (performance.now() - lastMapWheel < 350) return;
+  const target = pitchForZoom(map.getZoom());
+  if (Math.abs(map.getPitch() - target) > 1) {
+    map.easeTo({pitch:target,duration:reduced?0:250,essential:true});
+  }
+});
+
+function returnToFrance() {
+  mapWheelTarget=franceView.zoom;
+  lastMapWheel=0;
+  map.flyTo({...franceView,duration:reduced?0:1100,essential:true});
+}
+
+
+map.on("load",()=>{
+  try {
+    map.addSource("terrain-dem", {
+  type: "raster-dem",
+  url: "https://tiles.mapterhorn.com/tilejson.json",
+  tileSize: 512,
+  maxzoom: 12,
+  encoding: "terrarium"
+});
+    map.setTerrain({source:"terrain-dem",exaggeration:0.7});
+  } catch(err) {console.warn("Relief indisponible",err)}
+});
+const mapMarkers=new Map();
+experiences.forEach(e=>{
+  if(!e.coordonnees) return;
+  const element=createBubble(e,"map-bubble");
+  const marker=new maplibregl.Marker({element,anchor:"bottom"})
+    .setLngLat(e.coordonnees).addTo(map);
+  mapMarkers.set(e.id,{element,marker});
+});
+
+// Frise chronologique
+const viewport=document.getElementById("timelineViewport");
+const eventsLayer=document.getElementById("timelineEvents");
+const yearsLayer=document.getElementById("timelineYears");
+const DAY=86400000;
+const SIDE=28;
+const parseDate=s=>{
+  const [y,m,d]=s.split("-").map(Number);
+  return new Date(y,m-1,d,12).getTime();
+};
+const birthTime=parseDate("1997-07-15");
+function todayTime() {
+  const t=new Date();
+  return new Date(t.getFullYear(),t.getMonth(),t.getDate(),12).getTime();
+}
+
+let viewStart=birthTime,viewEnd=todayTime(),isFullView=true;
+let activeId=null,activeFilter="tous",lastToday=todayTime();
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+function normalizeWindow() {
+  const today=todayTime();
+  const maxSpan=today-birthTime;
+  const span=clamp(viewEnd-viewStart,DAY*30,maxSpan);
+  viewStart=clamp(viewStart,birthTime,today-span);
+  viewEnd=viewStart+span;
+}
+
+function timeToX(t) {
+  const w=Math.max(1,viewport.clientWidth-2*SIDE);
+  return SIDE+(t-viewStart)/(viewEnd-viewStart)*w;
+}
+function xToRatio(clientX) {
+  const rect=viewport.getBoundingClientRect();
+  return clamp((clientX-rect.left-SIDE)/
+    Math.max(1,rect.width-2*SIDE),0,1);
+}
+function isVisible(e) {
+  return activeFilter==="tous"||e.categorie===activeFilter;
+}
+function labelAt(text,x,align="center") {
+  const el=document.createElement("span");
+  el.className="year-label";
+  el.textContent=text;
+  el.style.left=x+"px";
+  if(align==="left") el.style.transform="translateX(0)";
+  if(align==="right") el.style.transform="translateX(-100%)";
+  yearsLayer.append(el);
+}
+// Each date uses its position in the full lifetime, not in the visible window.
+function timelineColorAt(time,birth,today) {
+  const ratio=Math.max(0,Math.min(1,(time-birth)/Math.max(1,today-birth)));
+  const start=[248,246,241],end=[123,175,123];
+  return start.map((channel,index)=>channel+(end[index]-channel)*ratio);
+}
+function updateTimelineGradient(today) {
+  const from=timelineColorAt(viewStart,birthTime,today);
+  const to=timelineColorAt(viewEnd,birthTime,today);
+  document.querySelector(".timeline-line").style.background=
+    `linear-gradient(90deg, rgb(${from.join(',')}) 0%, rgb(${to.join(',')}) 100%)`;
+}
+function renderTimeline() {
+  eventsLayer.replaceChildren();
+  yearsLayer.replaceChildren();
+  const width=viewport.clientWidth;
+  if(width<70) return;
+  const today=todayTime();
+
+  // Le bout de frise avance au changement de date.
+  if(today!==lastToday) {
+    if(isFullView) {viewStart=birthTime;viewEnd=today}
+    else if(Math.abs(viewEnd-lastToday)<DAY) viewEnd=today;
+    lastToday=today;
+  }
+  normalizeWindow();
+  updateTimelineGradient(today);
+  const span=viewEnd-viewStart;
+  const years=span/(365.25*DAY);
+  const step=years>22?5:years>11?2:1;
+
+  // 1997 n'est montré que lorsque le début de vie est visible.
+  if(Math.abs(viewStart-birthTime)<DAY) labelAt("1997",SIDE,"left");
+
+  if(years<1.2) {
+    const months=["janv.","févr.","mars","avr.","mai","juin",
+      "juil.","août","sept.","oct.","nov.","déc."];
+    const start=new Date(viewStart);
+    for(let i=0;i<24;i++) {
+      const dt=new Date(start.getFullYear(),start.getMonth()+i,1,12);
+      if(dt.getTime()>viewEnd) break;
+      const x=timeToX(dt.getTime());
+      if(x>SIDE+40&&x<width-SIDE-40)
+        labelAt(months[dt.getMonth()]+" "+dt.getFullYear(),x);
+    }
+  } else {
+    const first=new Date(viewStart).getFullYear();
+    const last=new Date(viewEnd).getFullYear();
+    for(let y=first;y<=last;y++) {
+      if(y===1997||y%step!==0) continue;
+      const x=timeToX(new Date(y,0,1,12).getTime());
+      if(x>SIDE+38&&x<width-SIDE-45) labelAt(String(y),x);
+    }
+  }
+  if(Math.abs(viewEnd-today)<DAY) {
+    labelAt(String(new Date(today).getFullYear()),width-SIDE,"right");
+  }
+
+  experiences.filter(isVisible).forEach(e=>{
+    const t=parseDate(e.debut);
+    if(t<viewStart||t>viewEnd) return;
+    const holder=document.createElement("div");
+    holder.className="timeline-marker";
+    holder.style.left=timeToX(t)+"px";
+    const bubble=createBubble(e,"time-bubble");
+    bubble.classList.toggle("selected",e.id===activeId);
+    holder.appendChild(bubble);
+    eventsLayer.appendChild(holder);
+  });
+}
+
+function zoomTime(factor,anchor=.5) {
+  const oldSpan=viewEnd-viewStart;
+  const maxSpan=todayTime()-birthTime;
+  const span=clamp(oldSpan*factor,30*DAY,maxSpan);
+  const pivot=viewStart+oldSpan*anchor;
+  viewStart=pivot-span*anchor;
+  viewEnd=viewStart+span;
+  normalizeWindow();
+  isFullView=Math.abs(viewStart-birthTime)<DAY&&
+    Math.abs(viewEnd-todayTime())<DAY;
+  renderTimeline();
+}
+function panTime(fraction) {
+  const delta=(viewEnd-viewStart)*fraction;
+  viewStart+=delta;viewEnd+=delta;
+  normalizeWindow();isFullView=false;renderTimeline();
+}
+function resetTimeline() {
+  isFullView=true;viewStart=birthTime;viewEnd=todayTime();
+  renderTimeline();
+}
+function focusTime(t) {
+  if(t<viewStart||t>viewEnd) {
+    const span=viewEnd-viewStart;
+    viewStart=t-span/2;viewEnd=viewStart+span;
+    normalizeWindow();isFullView=false;
+  }
+  renderTimeline();
+}
+let drag=null;
+viewport.addEventListener("pointerdown",e=>{
+  if(e.button!==0||e.target.closest("button")) return;
+  drag={x:e.clientX,start:viewStart,end:viewEnd};
+  viewport.setPointerCapture(e.pointerId);
+  viewport.classList.add("dragging");
+});
+viewport.addEventListener("pointermove",e=>{
+  if(!drag) return;
+  const w=Math.max(1,viewport.clientWidth-2*SIDE);
+  const delta=(e.clientX-drag.x)/w*(drag.end-drag.start);
+  viewStart=drag.start-delta;viewEnd=drag.end-delta;
+  normalizeWindow();isFullView=false;renderTimeline();
+});
+function stopDrag(){drag=null;viewport.classList.remove("dragging")}
+viewport.addEventListener("pointerup",stopDrag);
+viewport.addEventListener("pointercancel",stopDrag);
+viewport.addEventListener("lostpointercapture",stopDrag);
+
+// Sur la frise seulement : molette simple OU Ctrl + molette
+viewport.addEventListener("wheel",e=>{
+  if(e.target.closest("button")) return;
+  e.preventDefault();e.stopPropagation();
+  const factor=e.deltaY>0?1.16:0.86;
+  zoomTime(factor,xToRatio(e.clientX));
+},{passive:false});
+
+document.getElementById("timeLeft").onclick=()=>panTime(-.18);
+document.getElementById("timeRight").onclick=()=>panTime(.18);
+document.getElementById("timeZoomIn").onclick=()=>zoomTime(.72);
+document.getElementById("timeZoomOut").onclick=()=>zoomTime(1.38);
+document.getElementById("timeReset").onclick=resetTimeline;
+
+function formatDate(s) {
+  return new Date(parseDate(s)).toLocaleDateString("fr-FR",{
+    day:"numeric",month:"long",year:"numeric"
+  });
+}
+function selectExperience(id) {
+  const e=experiences.find(x=>x.id===id);
+  if(!e) return;
+  if(!isVisible(e)) setFilter("tous");
+  activeId=id;
+  focusTime(parseDate(e.debut));
+  mapMarkers.forEach((marker,mid)=>{
+    marker.element.classList.toggle("selected",mid===id);
+  });
+  if(e.coordonnees) {
+    const targetZoom=9;
+    mapWheelTarget=targetZoom;
+    lastMapWheel=0;
+    map.flyTo({
+      center:e.coordonnees,
+      offset:panelMapOffset(),
+      zoom:targetZoom,
+      pitch:pitchForZoom(targetZoom),
+      bearing:-10,
+      duration:reduced?0:1300,
+      essential:true
+    });
+  }
+  document.body.classList.add("has-experience");
+  VRCard.render(document.getElementById("panelContent"),e);
+  document.querySelector(".panel-scroll").scrollTop=0;
+  document.getElementById("experiencePanel").classList.add("open");
+}
+function closePanel() {
+  document.body.classList.remove("has-experience");
+  VRCard.stop(document.getElementById("panelContent"));
+  document.getElementById("experiencePanel").classList.remove("open");
+}
+document.getElementById("closePanel").onclick=closePanel;
+const detailPanel=document.getElementById('experiencePanel');
+const resizeHandle=document.getElementById('panelResize');
+let savedPanelWidth=420;
+function panelMapOffset(){return window.innerWidth>750?[(24+Math.min(savedPanelWidth,window.innerWidth-280))/2,0]:[0,0]}
+function resizeDetail(width){
+  savedPanelWidth=Math.max(320,Math.min(width,window.innerWidth-280));
+  detailPanel.style.setProperty('--panel-width',savedPanelWidth+'px');
+  resizeHandle.setAttribute('aria-valuemin','320');
+  resizeHandle.setAttribute('aria-valuemax',String(Math.max(320,window.innerWidth-280)));
+  resizeHandle.setAttribute('aria-valuenow',String(Math.round(savedPanelWidth)));
+}
+function recenterDetail(){const selected=experiences.find(e=>e.id===activeId);if(detailPanel.classList.contains('open')&&selected?.coordonnees)map.easeTo({center:selected.coordonnees,offset:panelMapOffset(),duration:reduced?0:250})}
+let resizing=false;
+resizeHandle.addEventListener('pointerdown',e=>{if(e.button!==0||window.innerWidth<=750)return;resizing=true;resizeHandle.setPointerCapture(e.pointerId);detailPanel.classList.add('resizing');e.preventDefault()});
+resizeHandle.addEventListener('pointermove',e=>{if(resizing)resizeDetail(e.clientX-detailPanel.getBoundingClientRect().left)});
+function endResize(){if(!resizing)return;resizing=false;detailPanel.classList.remove('resizing');recenterDetail()}
+resizeHandle.addEventListener('pointerup',endResize);resizeHandle.addEventListener('pointercancel',endResize);resizeHandle.addEventListener('lostpointercapture',endResize);
+resizeHandle.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();resizeDetail(e.key==='Home'?320:e.key==='End'?window.innerWidth-280:savedPanelWidth+(e.key==='ArrowRight'?40:-40));recenterDetail()}});
+window.addEventListener('resize',()=>{if(window.innerWidth>750)resizeDetail(savedPanelWidth);recenterDetail()});
+resizeDetail(savedPanelWidth);
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&!VRCard.isLightboxOpen()) closePanel();
+});
+function setFilter(filter) {
+  activeFilter=filter;
+  document.querySelectorAll(".filter").forEach(btn=>{
+    const on=btn.dataset.filter===filter;
+    btn.classList.toggle("active",on);
+    btn.setAttribute("aria-pressed",String(on));
+  });
+  mapMarkers.forEach((obj,id)=>{
+    const e=experiences.find(x=>x.id===id);
+    obj.element.style.display=isVisible(e)?"":"none";
+  });
+  renderTimeline();
+}
+document.querySelectorAll(".filter").forEach(btn=>{
+  btn.onclick=()=>{
+    activeId=null;
+    closePanel();
+    mapMarkers.forEach(obj=>obj.element.classList.remove("selected"));
+    setFilter(btn.dataset.filter);
+    returnToFrance();
+  };
+});
+resetTimeline();
+// Mise à jour automatique si l'onglet reste ouvert pendant un changement de date
+setInterval(renderTimeline,10*60*1000);
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden) renderTimeline();
+});
+window.addEventListener("resize",()=>{renderTimeline();map.resize()});
+</script>
+<footer class="personal-footer"><a href="mentions-legales.html" target="_blank" rel="noopener noreferrer">Mentions légales</a><a href="confidentialite.html" target="_blank" rel="noopener noreferrer">Confidentialité</a><a class="footer-linkedin" href="https://www.linkedin.com/in/thibaut-souchon-506b99141/" aria-label="LinkedIn de Thibaut Souchon" target="_blank" rel="noopener noreferrer"><img src="assets/linkedin.svg" alt="LinkedIn"></a></footer></body>
+</html>
+
+

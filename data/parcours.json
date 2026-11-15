@@ -1,0 +1,38 @@
+[
+  {
+    "id": "naissance",
+    "titre": "Ma naissance",
+    "categorie": "personnel",
+    "debut": "1997-07-15",
+    "fin": null,
+    "lieu": "Lieu à renseigner",
+    "coordonnees": null,
+    "description": "Le début de mon histoire.",
+    "image": ""
+  },
+  {
+    "id": "formation-exemple",
+    "titre": "Formation — exemple",
+    "categorie": "formation",
+    "debut": "2021-09-01",
+    "fin": "2023-06-30",
+    "lieu": "À renseigner",
+    "coordonnees": null,
+    "description": "Formation fictive à remplacer.",
+    "image": ""
+  },
+  {
+    "id": "epl",
+    "titre": "EPLEFPA des Hautes Terres",
+    "categorie": "professionnel",
+    "debut": "2025-02-01",
+    "fin": "2028-01-31",
+    "lieu": "Saint-Flour, Cantal",
+    "coordonnees": [
+      3.092,
+      45.034
+    ],
+    "description": "Chef de projet ACTIFE, chargé de communication et formateur. Développement de l'AgriFabLab Élevage à l'herbe.",
+    "image": ""
+  }
+]

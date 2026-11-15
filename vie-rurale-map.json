@@ -1,0 +1,31 @@
+{
+  "version": 8,
+  "sources": {
+    "ign-photos": {
+      "type": "raster",
+      "tiles": [
+        "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+      ],
+      "tileSize": 256,
+      "maxzoom": 19,
+      "attribution": "© IGN — <a href=\"https://cartes.gouv.fr/\">Géoplateforme</a>"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#f8f6f1"
+      }
+    },
+    {
+      "id": "ign-photos",
+      "type": "raster",
+      "source": "ign-photos",
+      "paint": {
+        "raster-opacity": 1
+      }
+    }
+  ]
+}

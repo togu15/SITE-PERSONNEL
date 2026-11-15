@@ -1,0 +1,32 @@
+/* Portrait rests directly on the card; title and copy form the right column. */
+.contact-page{font-family:Barlow,Arial,sans-serif;color:#000}
+.contact-main{max-width:1640px;margin:auto;padding:calc(var(--header-height,132px) + 35px) clamp(24px,6vw,100px) clamp(50px,6vw,100px)}
+.contact-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"portrait title" "card copy";column-gap:clamp(36px,6vw,100px);row-gap:0;align-items:center}
+.contact-portrait{grid-area:portrait;align-self:end;display:flex;justify-content:center;align-items:flex-end}
+.contact-portrait img{display:block;width:100%;height:clamp(320px,34vw,540px);object-fit:contain;object-position:center bottom}
+.contact-title{grid-area:title;padding:30px 0}
+.contact-title h1{font-size:clamp(38px,4.5vw,76px);font-weight:800;line-height:.98;letter-spacing:-.045em;text-transform:uppercase;margin:0}
+.contact-main h1 span,.contact-copy h2 span{color:#7baf7b}
+.contact-card{grid-area:card;align-self:start;min-width:0;background:#7baf7b;border-radius:6px;box-shadow:4px 4px 4px #0003;padding:clamp(26px,3vw,44px)}
+.contact-card-logo{display:block;width:clamp(120px,10vw,160px);height:auto;margin-bottom:24px}
+.contact-card h2{font-size:clamp(26px,2.5vw,40px);font-weight:800;text-transform:uppercase;line-height:1.1;margin:0 0 22px}
+.contact-card address{font-style:normal;font-size:clamp(17px,1.55vw,24px);font-weight:700;overflow-wrap:anywhere}
+.contact-card address p{margin:0 0 18px}.contact-card address p:last-child{margin-bottom:0}
+.contact-card address span{display:block;font-size:14px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.contact-copy{grid-area:copy;align-self:center;padding:20px 0}
+.contact-copy h2{font-size:clamp(25px,2.5vw,40px);font-weight:800;text-transform:uppercase;line-height:1.05;letter-spacing:-.025em;margin:0 0 24px}
+.contact-copy p{max-width:550px;font-size:clamp(18px,1.4vw,23px);font-weight:700;line-height:1.5;margin:0 0 20px}
+.contact-button{display:inline-block;background:#7baf7b;color:#000;padding:18px 26px;border-radius:5px;box-shadow:4px 4px 4px #0003;font-size:clamp(17px,1.4vw,25px);font-weight:700;text-transform:uppercase;margin-top:8px}
+.contact-button:hover{background:#8abb8a}
+@media(max-width:700px){.contact-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"portrait" "card" "title" "copy"}.contact-main{padding-top:calc(var(--header-height,70px) + 20px)}.contact-portrait img{height:clamp(300px,90vw,480px)}.contact-card{padding:28px 24px}.contact-title{padding:44px 0 24px}.contact-title h1{font-size:clamp(36px,8vw,56px)}.contact-copy{padding:0}.contact-button{padding:17px 22px}}
+
+/* Remove browser defaults so the social band reaches the page edges. */
+html{margin:0;padding:0}
+body.contact-page{margin:0;padding:0;min-height:100vh}
+.contact-page,.contact-page *,.contact-page *::before,.contact-page *::after{box-sizing:border-box}
+.contact-page .projects-social{width:100%;margin:0}
+.contact-card address .phone-desktop{display:inline;font-size:inherit;text-transform:none;letter-spacing:normal;margin:0}
+.phone-mobile{display:none}
+@media(max-width:700px),(pointer:coarse){.contact-card address .phone-desktop{display:none}.phone-mobile{display:inline}}
+
+.contact-linkedin{display:flex;align-items:center;gap:12px;margin-top:24px;font-family:Barlow,Arial,sans-serif;font-weight:700;text-transform:uppercase;font-size:16px;line-height:1.3}.contact-linkedin img{width:26px;height:26px;flex:0 0 26px}.contact-linkedin:hover span{text-decoration:underline;text-underline-offset:4px}.contact-linkedin:focus-visible{outline:3px solid #000;outline-offset:5px}

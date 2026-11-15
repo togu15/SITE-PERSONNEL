@@ -1,0 +1,40 @@
+@font-face{font-family:BarlowReading;src:url('https://raw.githubusercontent.com/google/fonts/main/ofl/barlow/Barlow-Regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
+.vr-card{color:#171b16;background:#f8f6f1;overflow-wrap:anywhere}
+.vr-card .vr-title{font-family:Barlow,Arial,sans-serif!important;color:#7baf7b!important;font-size:30px!important;line-height:1.05!important;font-weight:800!important;letter-spacing:-.035em;text-transform:uppercase;margin:8px 0 22px!important}
+.vr-identity{background:none;border:0;border-radius:0;padding:0;display:grid;gap:12px;margin-bottom:24px}
+.vr-fact{display:flex;align-items:center;gap:12px;font-family:Barlow,Arial,sans-serif;font-weight:700;text-transform:uppercase;font-size:15px;line-height:1.35}
+.vr-fact-icon{display:flex;align-items:center;justify-content:center;flex:0 0 32px;width:32px;height:32px;color:#568658}
+.vr-card .vr-fact-icon img,.vr-fact-icon svg{width:32px!important;height:32px!important;margin:0!important;border-radius:0!important}
+.vr-card .vr-description{font-family:BarlowReading,Arial,sans-serif!important;font-weight:400!important;letter-spacing:0!important;font-size:17px!important;line-height:1.6!important;text-transform:none!important;white-space:pre-wrap;margin:0 0 24px}
+.vr-description strong{font-family:Barlow,Arial,sans-serif;font-weight:700;color:#7baf7b}
+.vr-gallery{margin:22px 0}.vr-media-frame{border-radius:10px;overflow:hidden;background:#e9eddf}
+.vr-card .vr-media-frame img,.vr-card .vr-media-frame video{display:block;width:100%;height:auto;max-height:330px;object-fit:contain;margin:0;border-radius:0}
+.vr-gallery-controls{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-family:BarlowReading,Arial,sans-serif;font-weight:400}
+.vr-gallery-controls button{border:0;border-radius:6px;background:#7baf7b;font-size:22px;padding:7px 15px;cursor:pointer;box-shadow:2px 2px 4px #0002}.vr-gallery-controls button:disabled{opacity:.3;cursor:default}
+.vr-resources h3{font-size:18px;text-transform:uppercase;font-family:Barlow,Arial,sans-serif;font-weight:700;margin:25px 0 12px}
+.vr-resource{display:flex;flex-direction:column;align-items:flex-start;gap:5px;color:#000;text-decoration:none;padding:14px 18px;margin:12px 0;border:0;border-radius:5px;background:#7baf7b;box-shadow:3px 3px 4px #0002;font-family:Barlow,Arial,sans-serif;font-weight:700;text-transform:uppercase;font-size:16px}.vr-resource:hover{background:#8abb8a}.vr-resource-type{font-size:11px;letter-spacing:.04em}
+.vr-card .vr-cover{display:block;width:100%;height:auto;max-height:330px;object-fit:contain;margin:0 0 24px;border-radius:10px}
+.vr-card button:focus-visible,.vr-card a:focus-visible{outline:3px solid #4f7950;outline-offset:3px}
+.vr-card .vr-arrow{width:18px!important;height:15px!important;object-fit:contain;margin:0!important;border-radius:0!important;pointer-events:none}.vr-arrow-left{transform:scaleX(-1)}
+.vr-gallery-controls button{min-width:36px;min-height:32px;display:flex;align-items:center;justify-content:center;padding:7px 9px}
+.vr-photo-action{cursor:zoom-in}.vr-photo-action:focus-visible{outline:3px solid #4f7950;outline-offset:3px}
+.vr-resource{flex-direction:row;justify-content:space-between;gap:14px}.vr-card .vr-resource-arrow{flex:0 0 14px;width:14px;height:12px;margin:0;object-fit:contain;transform:rotate(-45deg);border-radius:0}
+.vr-lightbox{position:fixed;inset:0;width:96vw;max-width:none;height:94dvh;max-height:none;margin:auto;padding:50px 60px 52px;background:#f8f6f1;border:0;border-radius:12px;color:#000;overflow:hidden;box-sizing:border-box}
+.vr-lightbox::backdrop{background:rgba(0,0,0,.82)}
+.vr-lightbox-image{display:block;width:100%;height:100%;object-fit:contain;margin:0}
+.vr-lightbox button{position:absolute;border:0;background:#7baf7b;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:10px}
+.vr-lightbox button:disabled{opacity:.3;cursor:default}.vr-lightbox-close{top:10px;right:12px;font-size:30px}.vr-lightbox-prev{left:10px;top:calc(50% - 20px)}.vr-lightbox-next{right:10px;top:calc(50% - 20px)}
+.vr-lightbox .vr-arrow{width:20px;height:16px;object-fit:contain;pointer-events:none}
+.vr-lightbox-caption{position:absolute;bottom:12px;left:60px;right:60px;text-align:center;font:400 16px BarlowReading,Arial,sans-serif;margin:0;max-height:36px;overflow:auto}
+@container(min-width:560px){
+ .vr-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;align-items:start}
+ .vr-card .vr-title{grid-column:1/-1}
+ .vr-card .vr-identity{grid-column:1;grid-row:2}.vr-card .vr-description{grid-column:2;grid-row:2}
+ .vr-card.vr-has-cover .vr-cover{grid-column:1;grid-row:1 / span 2;align-self:start;max-height:400px}
+ .vr-card.vr-has-cover .vr-title{grid-column:2;grid-row:1}
+ .vr-card.vr-has-cover .vr-identity{grid-column:2;grid-row:2}
+ .vr-card.vr-has-cover .vr-description{grid-column:1;grid-row:3}
+ .vr-card .vr-gallery{grid-column:2;grid-row:3;margin-top:0}
+ .vr-card .vr-resources{grid-column:1/-1}
+}
+@media(max-width:600px){.vr-lightbox{width:98vw;height:94dvh;padding:52px 42px}.vr-lightbox button{width:32px;height:36px;padding:8px}.vr-lightbox-prev{left:5px}.vr-lightbox-next{right:5px}.vr-lightbox-caption{left:20px;right:20px;font-size:14px}}

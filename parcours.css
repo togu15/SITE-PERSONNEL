@@ -1,0 +1,63 @@
+/* Shared home typography and header, with space for the full-screen map. */
+:root{--vr-green:#7baf7b;--vr-paper:#f8f6f1;--vr-ink:#000}
+body.parcours-page{display:block;font-family:Barlow,Arial,sans-serif;font-weight:700}
+.parcours-page .site-heading h1,.parcours-page .experience-panel h2{font-weight:800}
+.parcours-page .site-heading h1 span{color:var(--vr-green)}
+.parcours-page #map{top:0;height:100%}
+.parcours-page .map-gradient{top:0}
+.parcours-page .site-heading{top:calc(var(--header-height) + 25px)}
+.parcours-page .filters{top:calc(var(--header-height) + 25px)}
+.parcours-page .experience-panel{top:calc(var(--header-height) + 100px);max-height:calc(100dvh - var(--header-height) - 280px)}
+.parcours-page .filter{
+ font-family:Barlow,Arial,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0;
+ background:var(--vr-paper);color:var(--vr-ink);border:0;border-radius:5px;
+ box-shadow:2px 2px 3px #0003;
+}
+.parcours-page .filter{padding:10px 15px;font-size:12px}
+.parcours-page .filter.active{background:var(--vr-paper);color:var(--vr-dark);box-shadow:inset 0 0 0 2px var(--vr-green),2px 2px 3px #0003}
+.parcours-page .filter:hover{background:#eee9df;color:#000}
+.parcours-page .filter:focus-visible,.parcours-page .map-reset:focus-visible{outline:2px solid #000;outline-offset:3px}
+.parcours-page .site-heading{max-width:420px;width:38%}
+.parcours-page .site-heading h1{margin:0;font-family:Barlow,Arial,sans-serif;font-size:clamp(24px,2.5vw,38px);font-weight:800;line-height:1;letter-spacing:-.045em;color:#000;text-transform:uppercase}
+.parcours-page .filters{max-width:50%}
+@media(max-width:750px){
+ .parcours-page .site-heading{top:calc(var(--header-height) + 16px);width:calc(100% - 36px);max-width:420px}
+ .parcours-page .site-heading h1{font-size:26px;line-height:1}
+ .parcours-page .filters{top:calc(var(--header-height) + 125px);max-width:none}
+ .parcours-page .experience-panel{top:auto;max-height:calc(100dvh - var(--header-height) - 20px)}
+}
+@media(max-width:750px) and (max-height:650px){
+ .parcours-page .site-heading p{display:none}
+ .parcours-page .site-heading h1{font-size:23px;margin:0}
+ .parcours-page .filters{top:calc(var(--header-height) + 110px)}
+}
+
+/* Original supplied category icons, shared by map and timeline markers. */
+.bubble{background:transparent;border:0}
+.bubble img{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%;pointer-events:none}
+
+/* Supplied arrow; mirror only the previous-time direction. */
+.timeline-tools .time-arrow{display:flex;align-items:center;justify-content:center;width:38px;height:38px;padding:5px}
+.time-arrow img{display:block;width:28px;height:23px;object-fit:contain;pointer-events:none}
+.time-arrow-left img{transform:scaleX(-1)}
+
+/* Experience cards follow the typography of the project descriptions. */
+.parcours-page .experience-panel{background:#f8f6f1}
+.parcours-page .experience-panel h2{font-family:Barlow,Arial,sans-serif;font-weight:800;color:#7baf7b;letter-spacing:-.04em;text-transform:uppercase}
+.parcours-page #panelDescription{font-family:Barlow,Arial,sans-serif;font-weight:700;text-transform:uppercase;white-space:pre-line;line-height:1.5}
+/* Left-side sheet: fixed controls, independently scrolling contents. */
+.parcours-page .experience-panel{left:24px;right:auto;top:calc(var(--header-height) + 28px);bottom:180px;width:var(--panel-width,420px);max-width:calc(100vw - 280px);height:auto;max-height:none;padding:0;display:flex;flex-direction:column;overflow:visible;transform:translateX(calc(-100% - 60px));border:0;background:rgba(248,246,241,.97)}
+.parcours-page .experience-panel.open{transform:translateX(0)}
+.panel-toolbar{height:42px;flex:0 0 42px;display:flex;justify-content:flex-end;align-items:center;padding:0 12px}
+.parcours-page .close-panel{position:static;width:36px;height:36px;line-height:1;font-size:29px;z-index:2;border-radius:50%;background:#f8f6f1}
+.panel-scroll{flex:1;min-height:0;overflow:auto;padding:0 26px 26px;container-type:inline-size;overscroll-behavior:contain}
+.panel-resize{position:absolute;right:-6px;top:45px;bottom:12px;width:14px;cursor:ew-resize;touch-action:none;border-radius:10px}
+.panel-resize::after{content:'';position:absolute;left:5px;top:calc(50% - 24px);height:48px;width:4px;border-radius:3px;background:#7baf7b}
+.panel-resize:focus-visible{outline:2px solid #4f7950}.resizing{user-select:none}
+.has-experience .site-heading{visibility:hidden}
+.timeline-tools .time-arrow{width:32px;height:32px}.timeline-tools .time-arrow img{width:18px;height:15px}
+@media(max-width:750px){.parcours-page .experience-panel{left:12px;right:12px;top:calc(var(--header-height) + 15px);bottom:165px;width:auto;max-width:none;max-height:none}.panel-resize{display:none}.panel-scroll{padding:0 18px 20px}}
+
+.map-linkedin{position:fixed;right:24px;bottom:190px;z-index:4;display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:#7baf7b;border-radius:5px;box-shadow:2px 2px 4px #0003}
+.map-linkedin img{width:24px;height:24px;display:block}.map-linkedin:hover{background:#568658}.map-linkedin:focus-visible{outline:3px solid #000;outline-offset:4px}
+@media(max-width:750px){.map-linkedin{right:14px;bottom:166px}.has-experience .map-linkedin{visibility:hidden}}

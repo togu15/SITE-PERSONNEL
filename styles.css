@@ -1,0 +1,9 @@
+
+:root{--scale:1;--progress:0;--compact:0;background:#f8f6f1;scroll-behavior:smooth}
+html{width:100%;min-width:0;overflow-x:clip;scrollbar-gutter:stable}body{display:block;width:100%;min-width:0;margin:0;background:#f8f6f1;overflow-x:clip}a{color:inherit;text-decoration:none}a:focus-visible{outline:3px solid #000;outline-offset:5px}
+.accueil-ha-d2f8cfd44d21{display:block;width:1920px;height:2160px;zoom:var(--scale)}
+.photo-moi-d30d129746dc{background-image:url('assets/portrait.png');background-size:contain;background-position:center bottom;background-repeat:no-repeat;left:966px;width:954px}
+.c-202506081-d2f8cfd44d23{background-image:url('assets/vaches.jpg')}
+.rectangle-d30d61a3645a{top:0;height:1080.69px;border:0;background:linear-gradient(to bottom,rgba(248,246,241,0) 22.7817%,#f8f6f1 100%)}
+@media(max-width:600px){.accueil-ha-d2f8cfd44d21{width:1117px;height:3010px}.c-202506081-d2f8cfd44d23{width:2000px;height:1500px;left:-450px;top:0}.rectangle-d30d61a3645a{top:0;width:1117px;height:1400px;background:linear-gradient(to bottom,transparent 35.7143%,#f8f6f1 100%)}.rectangle-d2f8cfd44d24{top:1400px;width:1117px;height:1610px}.les-territ-d328665e213d{left:45px;top:380px}.path-d332536683dd{left:340px;top:750px;transform:scale(.8);transform-origin:top left}.moi-cest-d33320c510b7{left:45px;top:1470px;width:1050px}.path-d3398d2d6212{left:70px;top:1710px;transform:scale(.8);transform-origin:top left}.bienvenue-d3352e444f6b{left:0;top:1890px;width:1000px}.photo-moi-d30d129746dc{left:420px;top:2050px;width:690px;height:960px}.path-d33a1af7e7c1{left:200px;top:2210px;transform:scale(.8)}.bouton-dc-d3383ddef188{left:45px;top:2470px}}
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}}
